@@ -1,11 +1,12 @@
 package main
 
 type PageInfo struct {
-	Status      string
-	HtmlVersion string
-	Title       string
-	Headings    Headings
-	Links       Links
+	Status       string
+	HtmlVersion  string
+	Title        string
+	Headings     Headings
+	Links        Links
+	HasLoginForm bool
 }
 
 type Headings struct {

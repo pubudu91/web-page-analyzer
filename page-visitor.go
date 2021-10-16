@@ -49,6 +49,8 @@ func analyzeElementNode(node *html.Node, info *PageInfo, host string) {
 		info.Headings.H6++
 	} else if node.Data == "a" {
 		analyzeHyperlink(node, info, host)
+	} else if node.Data == "input" {
+		analyzeInput(node, info)
 	}
 }
 
@@ -78,6 +80,15 @@ func analyzeHyperlink(node *html.Node, info *PageInfo, host string) {
 	}
 }
 
+// Assumptions:
+// - There's only one login/register forms per page
+// - In a log in form, there's only one password type input field
+// - In a registration form, there are two password type input fields
+func analyzeInput(node *html.Node, info *PageInfo) {
+	inputType := getAttribute(node.Attr, "type")
+	info.HasLoginForm = info.HasLoginForm != (inputType == "password")
+}
+
 func isExternalLink(url *url.URL, host string) bool {
 	if url.Host == host {
 		return false
@@ -96,14 +107,11 @@ func isInaccessibleLink(url *url.URL) bool {
 }
 
 func getAttribute(attr []html.Attribute, name string) string {
-	href := ""
-
 	for _, attr := range attr {
 		if attr.Key == name {
-			href = attr.Val
-			break
+			return attr.Val
 		}
 	}
 
-	return href
+	return ""
 }
