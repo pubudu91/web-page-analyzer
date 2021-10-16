@@ -33,6 +33,6 @@ func getAnalysis(c *gin.Context) {
 		panic(err)
 	}
 
-	visit(page, &info)
+	visit(page, &info, resp.Request.Host)
 	c.IndentedJSON(http.StatusOK, info)
 }

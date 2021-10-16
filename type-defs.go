@@ -5,6 +5,7 @@ type PageInfo struct {
 	HtmlVersion string
 	Title       string
 	Headings    Headings
+	Links       Links
 }
 
 type Headings struct {
@@ -14,4 +15,10 @@ type Headings struct {
 	H4 int
 	H5 int
 	H6 int
+}
+
+type Links struct {
+	Internal     int
+	External     int
+	Inaccessible int
 }
