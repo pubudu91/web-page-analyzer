@@ -8,15 +8,15 @@ import (
 	"golang.org/x/net/html"
 )
 
-func visit(node *html.Node, info *PageInfo, host string) {
+func visit(node *html.Node, info *PageInfo, reqURL *url.URL) {
 	if node.Type == html.DoctypeNode {
 		info.HtmlVersion = getHTMLVersion(node)
 	} else if node.Type == html.ElementNode {
-		analyzeElementNode(node, info, host)
+		analyzeElementNode(node, info, reqURL)
 	}
 
 	for child := node.FirstChild; child != nil; child = child.NextSibling {
-		visit(child, info, host)
+		visit(child, info, reqURL)
 	}
 }
 
@@ -32,7 +32,7 @@ func getHTMLVersion(node *html.Node) string {
 	return matches[pattern.SubexpIndex("version")]
 }
 
-func analyzeElementNode(node *html.Node, info *PageInfo, host string) {
+func analyzeElementNode(node *html.Node, info *PageInfo, reqURL *url.URL) {
 	if node.Data == "title" {
 		info.Title = node.FirstChild.Data
 	} else if node.Data == "h1" {
@@ -48,13 +48,13 @@ func analyzeElementNode(node *html.Node, info *PageInfo, host string) {
 	} else if node.Data == "h6" {
 		info.Headings.H6++
 	} else if node.Data == "a" {
-		analyzeHyperlink(node, info, host)
+		analyzeHyperlink(node, info, reqURL)
 	} else if node.Data == "input" {
 		analyzeInput(node, info)
 	}
 }
 
-func analyzeHyperlink(node *html.Node, info *PageInfo, host string) {
+func analyzeHyperlink(node *html.Node, info *PageInfo, reqURL *url.URL) {
 	href := getAttribute(node.Attr, "href")
 
 	if href == "" {
@@ -69,7 +69,9 @@ func analyzeHyperlink(node *html.Node, info *PageInfo, host string) {
 		panic(err)
 	}
 
-	if isExternalLink(url, host) {
+	url = reqURL.ResolveReference(url)
+
+	if isExternalLink(url, reqURL.Host) {
 		info.Links.External++
 	} else {
 		info.Links.Internal++
