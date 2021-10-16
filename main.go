@@ -8,12 +8,6 @@ import (
 	"golang.org/x/net/html"
 )
 
-type PageInfo struct {
-	Status      string
-	HtmlVersion string
-	Title       string
-}
-
 func main() {
 	router := gin.Default()
 
