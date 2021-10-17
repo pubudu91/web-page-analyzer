@@ -1,0 +1,19 @@
+Web Page Analyzer
+==================
+
+How to Run
+----------
+Can either use `go run .` or build it using `go build` and then run the resulting `web-page-analyzer` artifact.
+
+If needed, host and port can be configured as follows:
+$ ./web-page-analyzer -host=127.0.0.1 -port=9090
+
+By default the service runs on localhost:8080
+
+Assumptions/decisions Made
+--------------------------
+
+
+Further Improvements
+--------------------
+
