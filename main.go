@@ -11,9 +11,18 @@ import (
 func main() {
 	router := gin.Default()
 
+	router.Static("/css", "views/css")
+	router.Static("/js", "views/js")
+	router.LoadHTMLFiles("views/index.html")
+
+	router.GET("/", getHomePage)
 	router.GET("/analyze", getAnalysis)
 
 	router.Run("localhost:8080")
+}
+
+func getHomePage(c *gin.Context) {
+	c.HTML(http.StatusOK, "index.html", nil)
 }
 
 func getAnalysis(c *gin.Context) {
