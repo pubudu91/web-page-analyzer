@@ -1,15 +1,16 @@
 const analyzeBtn = document.querySelector("#analyze")
 const results = document.querySelector("#results")
+const urlInput = document.querySelector("#url")
 
 analyzeBtn.addEventListener("click", analyzeURL)
+urlInput.addEventListener("input", validateURLInput)
 
 // functions
 
 function analyzeURL() {
-    const url = document.querySelector("#url").value
     results.innerText = "Analyzing...."
 
-    fetch("/analyze?" + new URLSearchParams({ url: url }))
+    fetch("/analyze?" + new URLSearchParams({ url: urlInput.value }))
         .then(res => res.json())
         .then(data => {
             results.removeChild(results.firstChild)
@@ -71,4 +72,29 @@ function addRow(table, key, val) {
     valCell.appendChild(text)
 
     return row
+}
+
+function validateURLInput() {
+    if (urlInput.value !== "" && !isValidURL(urlInput.value)) {
+        document.querySelector("#errormsg").innerHTML = "Invalid HTTP URL!"
+        return
+    }
+
+    document.querySelector("#errormsg").innerHTML = ""
+
+    if (urlInput.value !== "") {
+        analyzeBtn.disabled = false
+    }
+}
+
+function isValidURL(givenURL) {
+    let url;
+
+    try {
+        url = new URL(givenURL)
+    } catch (_) {
+        return false
+    }
+
+    return url.protocol === "http:" || url.protocol === "https:"
 }
