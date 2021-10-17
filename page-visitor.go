@@ -26,7 +26,12 @@ func getHTMLVersion(node *html.Node) string {
 	}
 
 	attr := node.Attr[0]
-	pattern := regexp.MustCompile("-//W3C//DTD (?P<version>[a-zA-Z0-9 .]+)//EN")
+	pattern, err := regexp.Compile("-//W3C//DTD (?P<version>[a-zA-Z0-9 .]+)//EN")
+
+	if err != nil {
+		return "<< version undetermined >>"
+	}
+
 	matches := pattern.FindStringSubmatch(attr.Val)
 
 	return matches[pattern.SubexpIndex("version")]
@@ -56,17 +61,13 @@ func analyzeElementNode(node *html.Node, info *PageInfo, reqURL *url.URL) {
 
 func analyzeHyperlink(node *html.Node, info *PageInfo, reqURL *url.URL) {
 	href := getAttribute(node.Attr, "href")
-
-	if href == "" {
-		info.Links.Inaccessible++
-		info.Links.Internal++
-		return
-	}
-
 	url, err := url.Parse(href)
 
-	if err != nil {
-		panic(err)
+	if href == "" || err != nil {
+		// Considering invalid URLs and empty strings as inaccessible internal links
+		info.Links.Internal++
+		info.Links.Inaccessible++
+		return
 	}
 
 	url = reqURL.ResolveReference(url)

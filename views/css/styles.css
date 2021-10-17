@@ -36,6 +36,14 @@ table.paleBlueRows tr:nth-child(even) {
     background: #d0e4f5;
 }
 
+.errordiagnostic {
+    color: #a31313
+}
+
+.normaldiagnostic {
+    color: #085205
+}
+
 #results {
     padding-top: 4em;
 }
@@ -60,6 +68,11 @@ table.paleBlueRows tr:nth-child(even) {
 #analyze:active {
     position: relative;
     top: 1px;
+}
+
+#analyze:disabled {
+    background-color: #9c9e9c;
+    border-color: #797474;
 }
 
 #url {

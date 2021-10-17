@@ -1,6 +1,7 @@
 const analyzeBtn = document.querySelector("#analyze")
 const results = document.querySelector("#results")
 const urlInput = document.querySelector("#url")
+const diagnosticMsg = document.querySelector("#errormsg")
 
 analyzeBtn.addEventListener("click", analyzeURL)
 urlInput.addEventListener("input", validateURLInput)
@@ -8,12 +9,27 @@ urlInput.addEventListener("input", validateURLInput)
 // functions
 
 function analyzeURL() {
-    results.innerText = "Analyzing...."
+    diagnosticMsg.innerHTML = "Analyzing..."
+    diagnosticMsg.setAttribute("class", "normaldiagnostic")
+
+    if (results.firstChild != null) {
+        results.removeChild(results.firstChild)
+    }
 
     fetch("/analyze?" + new URLSearchParams({ url: urlInput.value }))
         .then(res => res.json())
         .then(data => {
-            results.removeChild(results.firstChild)
+            if (data == null) {
+                setErrorDiagnostic("Server failed to process the web page returned by the specified URL.")
+                return
+            }
+
+            if (data.hasOwnProperty("error")) {
+                setErrorDiagnostic("Failed to anaylze the web page. Cause: " + data["error"])
+                return
+            }
+
+            diagnosticMsg.innerHTML = ""
             results.appendChild(createTable(data))
         })
         .catch(error => console.log(error))
@@ -76,11 +92,12 @@ function addRow(table, key, val) {
 
 function validateURLInput() {
     if (urlInput.value !== "" && !isValidURL(urlInput.value)) {
-        document.querySelector("#errormsg").innerHTML = "Invalid HTTP URL!"
+        setErrorDiagnostic("Invalid HTTP URL!")
+        analyzeBtn.disabled = true
         return
     }
 
-    document.querySelector("#errormsg").innerHTML = ""
+    diagnosticMsg.innerHTML = ""
 
     if (urlInput.value !== "") {
         analyzeBtn.disabled = false
@@ -97,4 +114,9 @@ function isValidURL(givenURL) {
     }
 
     return url.protocol === "http:" || url.protocol === "https:"
+}
+
+function setErrorDiagnostic(msg) {
+    diagnosticMsg.innerHTML = msg
+    diagnosticMsg.setAttribute("class", "errordiagnostic")
 }

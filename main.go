@@ -30,7 +30,8 @@ func getAnalysis(c *gin.Context) {
 	resp, err := http.Get(url)
 
 	if err != nil {
-		panic(err)
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	var info PageInfo
@@ -39,7 +40,8 @@ func getAnalysis(c *gin.Context) {
 	page, err := html.Parse(resp.Body)
 
 	if err != nil {
-		panic(err)
+		c.IndentedJSON(http.StatusInternalServerError, nil)
+		return
 	}
 
 	visit(page, &info, resp.Request.URL)
