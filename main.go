@@ -1,14 +1,18 @@
 package main
 
 import (
-	"net/http"
+	"flag"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
-
-	"golang.org/x/net/html"
 )
 
 func main() {
+	hostFlag := flag.String("host", "localhost", "The host name/IP")
+	portFlag := flag.Int("port", 8080, "The port to expose the service from")
+
+	flag.Parse()
+
 	router := gin.Default()
 
 	router.Static("/css", "views/css")
@@ -18,32 +22,5 @@ func main() {
 	router.GET("/", getHomePage)
 	router.GET("/analyze", getAnalysis)
 
-	router.Run("localhost:8080")
-}
-
-func getHomePage(c *gin.Context) {
-	c.HTML(http.StatusOK, "index.html", nil)
-}
-
-func getAnalysis(c *gin.Context) {
-	url := c.Request.URL.Query().Get("url")
-	resp, err := http.Get(url)
-
-	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var info PageInfo
-	info.Status = resp.Status
-
-	page, err := html.Parse(resp.Body)
-
-	if err != nil {
-		c.IndentedJSON(http.StatusInternalServerError, nil)
-		return
-	}
-
-	visit(page, &info, resp.Request.URL)
-	c.IndentedJSON(http.StatusOK, info)
+	router.Run(fmt.Sprintf("%s:%d", *hostFlag, *portFlag))
 }

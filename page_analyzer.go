@@ -8,7 +8,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-func visit(node *html.Node, info *PageInfo, reqURL *url.URL) {
+func analyze(node *html.Node, info *PageInfo, reqURL *url.URL) {
 	if node.Type == html.DoctypeNode {
 		info.HtmlVersion = getHTMLVersion(node)
 	} else if node.Type == html.ElementNode {
@@ -16,7 +16,7 @@ func visit(node *html.Node, info *PageInfo, reqURL *url.URL) {
 	}
 
 	for child := node.FirstChild; child != nil; child = child.NextSibling {
-		visit(child, info, reqURL)
+		analyze(child, info, reqURL)
 	}
 }
 
