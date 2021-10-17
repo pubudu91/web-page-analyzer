@@ -13,6 +13,13 @@ func main() {
 
 	flag.Parse()
 
+	router := setupRouter()
+
+	fmt.Printf("Starting Web Page Analyzer on %s:%d\n", *hostFlag, *portFlag)
+	router.Run(fmt.Sprintf("%s:%d", *hostFlag, *portFlag))
+}
+
+func setupRouter() *gin.Engine {
 	router := gin.Default()
 
 	router.Static("/css", "views/css")
@@ -22,5 +29,5 @@ func main() {
 	router.GET("/", getHomePage)
 	router.GET("/analyze", getAnalysis)
 
-	router.Run(fmt.Sprintf("%s:%d", *hostFlag, *portFlag))
+	return router
 }
