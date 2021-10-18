@@ -20,6 +20,11 @@ func getAnalysis(c *gin.Context) {
 		return
 	}
 
+	if resp.StatusCode >= 500 {
+		c.IndentedJSON(resp.StatusCode, gin.H{"error": "Failed to successfully retrieve the specified web page."})
+		return
+	}
+
 	var info PageInfo
 	info.Status = resp.Status
 

@@ -16,23 +16,32 @@ function analyzeURL() {
         results.removeChild(results.firstChild)
     }
 
-    fetch("/analyze?" + new URLSearchParams({ url: urlInput.value }))
-        .then(res => res.json())
-        .then(data => {
-            if (data == null) {
-                setErrorDiagnostic("Server failed to process the web page returned by the specified URL.")
-                return
-            }
+    invokeAnalyzeEndpoint(urlInput.value)
+}
 
-            if (data.hasOwnProperty("error")) {
-                setErrorDiagnostic("Failed to anaylze the web page. Cause: " + data["error"])
-                return
-            }
+async function invokeAnalyzeEndpoint(url) {
+    try {
+        let response = await fetch("/analyze?" + new URLSearchParams({ url: url }))
+        let data = await response.json();
 
-            diagnosticMsg.innerHTML = ""
-            results.appendChild(createTable(data))
-        })
-        .catch(error => console.log(error))
+        if (data == null) {
+            setErrorDiagnostic("[Status: " + response.status +
+                "] Server failed to process the web page returned by the specified URL.")
+            return
+        }
+
+        if (data.hasOwnProperty("error")) {
+            setErrorDiagnostic("[Status: " + response.status +
+                "] Failed to anaylze the web page. Cause: " + data["error"])
+            return
+        }
+
+        diagnosticMsg.innerHTML = ""
+        results.appendChild(createTable(data))
+    } catch (err) {
+        setErrorDiagnostic("Failed to fetch the analysis. Please try again.")
+        console.log(err)
+    }
 }
 
 function createTable(data) {
