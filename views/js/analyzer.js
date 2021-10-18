@@ -1,7 +1,7 @@
 const analyzeBtn = document.querySelector("#analyze")
 const results = document.querySelector("#results")
 const urlInput = document.querySelector("#url")
-const diagnosticMsg = document.querySelector("#errormsg")
+const diagnosticMsg = document.querySelector("#errorMsg")
 
 analyzeBtn.addEventListener("click", analyzeURL)
 urlInput.addEventListener("input", validateURLInput)
@@ -10,9 +10,9 @@ urlInput.addEventListener("input", validateURLInput)
 
 function analyzeURL() {
     diagnosticMsg.innerHTML = "Analyzing..."
-    diagnosticMsg.setAttribute("class", "normaldiagnostic")
+    diagnosticMsg.setAttribute("class", "normalDiagnostic")
 
-    if (results.firstChild != null) {
+    if (results.firstChild !== null) {
         results.removeChild(results.firstChild)
     }
 
@@ -22,7 +22,7 @@ function analyzeURL() {
 async function invokeAnalyzeEndpoint(url) {
     try {
         let response = await fetch("/analyze?" + new URLSearchParams({ url: url }))
-        let data = await response.json();
+        let data = await response.json()
 
         if (data == null) {
             setErrorDiagnostic("[Status: " + response.status +
@@ -65,7 +65,7 @@ function createTable(data) {
     for (const key in data["Headings"]) {
         const element = data["Headings"][key]
         row = addRow(table, key + ":", element)
-        row.firstChild.setAttribute("style", "padding-left:5.00em;")
+        row.firstChild.setAttribute("style", "padding-left: 75px;")
     }
 
     // Links
@@ -76,7 +76,7 @@ function createTable(data) {
     for (const key in data["Links"]) {
         const element = data["Links"][key]
         row = addRow(table, key + ":", element)
-        row.firstChild.setAttribute("style", "padding-left:5.00em;")
+        row.firstChild.setAttribute("style", "padding-left: 75px;")
     }
 
     // Has Login
@@ -88,11 +88,11 @@ function createTable(data) {
 function addRow(table, key, val) {
     let row = table.insertRow()
 
-    let keyCell = row.insertCell();
+    let keyCell = row.insertCell()
     let text = document.createTextNode(key)
     keyCell.appendChild(text)
 
-    let valCell = row.insertCell();
+    let valCell = row.insertCell()
     text = document.createTextNode(val)
     valCell.appendChild(text)
 
@@ -114,7 +114,7 @@ function validateURLInput() {
 }
 
 function isValidURL(givenURL) {
-    let url;
+    let url
 
     try {
         url = new URL(givenURL)
@@ -127,5 +127,5 @@ function isValidURL(givenURL) {
 
 function setErrorDiagnostic(msg) {
     diagnosticMsg.innerHTML = msg
-    diagnosticMsg.setAttribute("class", "errordiagnostic")
+    diagnosticMsg.setAttribute("class", "errorDiagnostic")
 }
